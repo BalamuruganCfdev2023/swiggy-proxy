@@ -10,6 +10,10 @@ app.use(cors({
   ]
 }));
 
+app.get("/", (req, res) => {
+  res.json({ message: "Swiggy Proxy is running" });
+});
+
 const SWIGGY_HEADERS = {
   "Referer": "https://www.swiggy.com/",
   "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
