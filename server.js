@@ -79,9 +79,10 @@ app.get("/api/image/:imagePath(*)", async (req, res) => {
     });
 
     const contentType = response.headers.get("content-type");
+    const buffer = await response.arrayBuffer();
     res.setHeader("Content-Type", contentType);
-    res.setHeader("Cache-Control", "public, max-age=86400"); // cache images for 1 day
-    response.body.pipe(res);
+    res.setHeader("Cache-Control", "public, max-age=86400");
+    res.send(Buffer.from(buffer));
   } catch (err) {
     console.error("Image error:", err.message);
     res.status(500).json({ error: err.message });
