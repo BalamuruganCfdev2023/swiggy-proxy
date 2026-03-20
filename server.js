@@ -89,5 +89,35 @@ app.get("/api/image/:imagePath(*)", async (req, res) => {
   }
 });
 
+// 4. Route for transformed images (Logo)
+app.get("/api/logo/:imagePath(*)", async (req, res) => {
+  try {
+    const imagePath = req.params.imagePath;
+    const url = `https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_660/${imagePath}`;
+
+    console.log("Logo URL:", url);
+
+    const response = await fetch(url, {
+      headers: {
+        "Referer": "https://www.swiggy.com/",
+        "User-Agent": SWIGGY_HEADERS["User-Agent"],
+      }
+    });
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: `Swiggy returned ${response.status}` });
+    }
+
+    const contentType = response.headers.get("content-type");
+    const buffer = await response.arrayBuffer();
+    res.setHeader("Content-Type", contentType);
+    res.setHeader("Cache-Control", "public, max-age=86400");
+    res.send(Buffer.from(buffer));
+  } catch (err) {
+    console.error("Logo error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Proxy running on port ${PORT}`));
